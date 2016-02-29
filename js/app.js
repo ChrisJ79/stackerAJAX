@@ -81,6 +81,56 @@ var getUnanswered = function(tags) {
 	});
 };
 
+// takes a string of semi-colon separated tags to be searched
+// for on StackOverflow
+var getInspiration = function(tags) {
+	
+	// the parameters we need to pass in our request to StackOverflow's API
+	var request = { 
+		site: 'stackoverflow',
+
+	};
+	
+	var result = $.ajax({
+		url: "http://api.stackexchange.com/2.2/questions/unanswered",
+		data: request,
+		dataType: "jsonp",//use jsonp to avoid cross origin issues
+		type: "GET",
+	})
+	.done(function(result){ //this waits for the ajax to return with a succesful promise object
+		var searchResults = showSearchResults(request.tagged, result.items.length);
+
+		$('.search-results').html(searchResults);
+		//$.each is a higher order function. It takes an array and a function as an argument.
+		//The function is executed once for each item in the array.
+		$.each(result.items, function(i, item) {
+			var ispiration = showInspiration(item);
+			$('.results').append(inspiration);
+		});
+	})
+	.fail(function(jqXHR, error){ //this waits for the ajax to return with an error promise object
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
+};
+
+var showInspiration = function (item) {
+    //alert('banana');
+    var result = $('.templates .inspiration').clone();
+    var user = result.find('.user a')
+        .attr('href', item.user.link)
+        .text(item.user.display_name);
+    var image = "<img src='" + item.user.profile_image + "' alt='" + item.user.display_name + "'>";
+    $(user).append(image);
+    result.find('.post-count').text(item.post_count);
+    result.find('.score').text(item.score);
+
+    return result;
+};
+
+
+
+
 
 $(document).ready( function() {
 	$('.unanswered-getter').submit( function(e){
@@ -91,4 +141,14 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+});
+
+
+
+    $('.inspiration-getter').submit(function (event) {
+        $('.results').html('');
+        var tag = $(this).find("input[name='answerers']").val();
+        getInspiration(tag);
+
+    });
 });

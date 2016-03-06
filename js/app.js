@@ -49,6 +49,8 @@ var showError = function(error){
 // takes a string of semi-colon separated tags to be searched
 // for on StackOverflow
 var getUnanswered = function(tags) {
+
+
 	
 	// the parameters we need to pass in our request to StackOverflow's API
 	var request = { 
@@ -114,6 +116,8 @@ var getInspiration = function(tags) {
 	});
 };
 
+
+
 var showInspiration = function (item) {
     //alert('banana');
     var result = $('.templates .inspiration').clone();
@@ -127,6 +131,11 @@ var showInspiration = function (item) {
 
     return result;
 };
+
+
+var displayAnswerer = function () {
+	
+}
 
 
 
@@ -151,4 +160,4 @@ $(document).ready( function() {
         getInspiration(tag);
 
     });
-});
+

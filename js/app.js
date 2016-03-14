@@ -85,32 +85,30 @@ var getUnanswered = function(tags) {
 
 // takes a string of semi-colon separated tags to be searched
 // for on StackOverflow
-var getInspiration = function(tags) {
-	
+var getInspiration = function(tag) {
+	var url = "http://api.stackexchange.com/2.2/tags/" + tag + "/top-answerers/all_time";
 	// the parameters we need to pass in our request to StackOverflow's API
+	
 	var request = { 
 		site: 'stackoverflow',
+	};	
 
-	};
-	
 	var result = $.ajax({
-		url: "http://api.stackexchange.com/2.2/questions/unanswered",
+		url: url,
 		data: request,
-		dataType: "jsonp",//use jsonp to avoid cross origin issues
-		type: "GET",
-	})
-	.done(function(result){ //this waits for the ajax to return with a succesful promise object
-		var searchResults = showSearchResults(request.tagged, result.items.length);
+		dataType: "jsonp",
+		type: "GET"	
+	}).done(function(result){ //this waits for the ajax to return with a succesful promise object
+		var searchResults = showSearchResults(tag, result.items.length);
 
 		$('.search-results').html(searchResults);
 		//$.each is a higher order function. It takes an array and a function as an argument.
 		//The function is executed once for each item in the array.
 		$.each(result.items, function(i, item) {
-			var ispiration = showInspiration(item);
+			var inspiration = showInspiration(item);
 			$('.results').append(inspiration);
 		});
-	})
-	.fail(function(jqXHR, error){ //this waits for the ajax to return with an error promise object
+	}).fail(function(jqXHR, error){ //this waits for the ajax to return with an error promise object
 		var errorElem = showError(error);
 		$('.search-results').append(errorElem);
 	});
@@ -119,7 +117,6 @@ var getInspiration = function(tags) {
 
 
 var showInspiration = function (item) {
-    //alert('banana');
     var result = $('.templates .inspiration').clone();
     var user = result.find('.user a')
         .attr('href', item.user.link)
@@ -131,12 +128,6 @@ var showInspiration = function (item) {
 
     return result;
 };
-
-
-var displayAnswerer = function () {
-	
-}
-
 
 
 
@@ -154,7 +145,8 @@ $(document).ready( function() {
 
 
 
-    $('.inspiration-getter').submit(function (event) {
+    $('.inspiration-getter').submit( function (e) {
+    	e.preventDefault();
         $('.results').html('');
         var tag = $(this).find("input[name='answerers']").val();
         getInspiration(tag);
